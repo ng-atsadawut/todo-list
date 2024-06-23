@@ -11,9 +11,11 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
 
     List<Task> findAll();
 
+    List<Task> findByOwner_UsernameOrOwner_Email(String username, String email);
+
     List<Task> findByCompletedTrue();
 
     List<Task> findByCompletedFalse();
 
-    List<Task> findByTitleIsContaining(String name);
+    List<Task> findByTitleIsContainingAndOwner_UsernameOrOwner_Email(String name, String username, String email);
 }

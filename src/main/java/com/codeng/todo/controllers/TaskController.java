@@ -1,11 +1,14 @@
 package com.codeng.todo.controllers;
 
 import com.codeng.todo.models.Task;
+import com.codeng.todo.models.User;
+import com.codeng.todo.repository.UserRepository;
 import com.codeng.todo.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +24,12 @@ public class TaskController {
     public TaskService taskService;
 
     @GetMapping("")
-    public ResponseEntity<List<Task>> getAllTask(@RequestParam(value = "title", defaultValue = "", required = false) String name){
+    public ResponseEntity<List<Task>> getAllTask(Authentication authentication, @RequestParam(value = "title", defaultValue = "", required = false) String name){
+        String usernameOrEmail = authentication.getName();
         if(name.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(taskService.getAllTask());
+            return ResponseEntity.status(HttpStatus.OK).body(taskService.getAllTask(usernameOrEmail));
         }else{
-            return ResponseEntity.status(HttpStatus.OK).body(taskService.getTaskByTitle(name));
+            return ResponseEntity.status(HttpStatus.OK).body(taskService.getTaskByTitle(usernameOrEmail, name));
         }
     }
 
@@ -45,8 +49,8 @@ public class TaskController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createTask(@Valid @RequestBody Task task){
-        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(task));
+    public ResponseEntity<?> createTask(Authentication authentication, @Valid @RequestBody Task task){
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(task, authentication.getName()));
     }
 
     @PutMapping("/{id}")

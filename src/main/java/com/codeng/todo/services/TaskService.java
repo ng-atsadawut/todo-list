@@ -1,7 +1,9 @@
 package com.codeng.todo.services;
 
 import com.codeng.todo.models.Task;
+import com.codeng.todo.models.User;
 import com.codeng.todo.repository.TaskRepository;
+import com.codeng.todo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +16,19 @@ public class TaskService {
     @Autowired
     public TaskRepository taskRepository;
 
-    public List<Task> getAllTask() {
-        return taskRepository.findAll();
+    @Autowired
+    public UserRepository userRepository;
+
+    public List<Task> getAllTask(String usernameOrEmail) {
+        return taskRepository.findByOwner_UsernameOrOwner_Email(usernameOrEmail, usernameOrEmail);
+//        return taskRepository.findAll();
     }
 
-    public Task createTask(Task task){
+    public Task createTask(Task task, String usernameOrEmail){
+        Optional<User> user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+        System.out.println(usernameOrEmail);
+        System.out.println(user);
+        task.setOwner(user.get());
         return taskRepository.save(task);
     }
 
@@ -34,8 +44,10 @@ public class TaskService {
         return taskRepository.findByCompletedFalse();
     }
 
-    public List<Task> getTaskByTitle(String name){
-        return taskRepository.findByTitleIsContaining(name);
+    public List<Task> getTaskByTitle(String usernameOrEmail, String name){
+        System.out.println("usernameOrEmail: " + usernameOrEmail);
+        System.out.println("name: " + name);
+        return taskRepository.findByTitleIsContainingAndOwner_UsernameOrOwner_Email(name, usernameOrEmail, usernameOrEmail);
     }
 
     public Optional<Task> updateTask(Long id, Task task){
@@ -62,6 +74,9 @@ public class TaskService {
 
     public boolean deleteTask(Long id){
         Optional<Task> getTask = taskRepository.findById(id);
+        System.out.println("getTask----------------------------------");
+        System.out.println(id);
+        System.out.println(getTask);
         if(getTask.isEmpty()){
             return false;
         }

@@ -1,21 +1,19 @@
 package com.codeng.todo.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Set;
-
+@Setter
+@Getter
 @Entity
 @Table(name = "roles")
-@Getter
-@Setter
 public class Role {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(length = 60)
     private String name;
-
 }
+

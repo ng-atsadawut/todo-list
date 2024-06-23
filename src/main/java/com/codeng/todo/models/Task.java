@@ -19,6 +19,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
     @NotNull(message = "title is mandatory")
     @Column(nullable = false)
     private String title;
